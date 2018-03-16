@@ -15,9 +15,12 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+import android.text.format.Time;
+
 
 public class MainActivity extends AppCompatActivity {
 
+    private Time time;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,18 +29,38 @@ public class MainActivity extends AppCompatActivity {
 
     public void btnClick(View view) {
         new DownloadUpdate().execute();
+        time = new Time();
+        time.setToNow();
+        refreshDate();
+        refreshWeekDay();
     }
 
+    private  void refreshDate(){
+        String day,month;
+        if(time.month+1>9)
+            month = Integer.toString(time.month+1);
+        else
+            month = "0"+Integer.toString(time.month+1);
+        if(time.monthDay>9)
+            day = Integer.toString(time.monthDay);
+        else
+            day = "0"+Integer.toString(time.monthDay);
+        ((TextView) findViewById(R.id.tv_date)).setText(time.year+"/"+month+"/"+day);
+    }
+
+    private  void refreshWeekDay(){
+        int weekDayNum = time.weekDay;
+        String weekDay[] = {"MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY","SUNDAY"};
+        ((TextView) findViewById(R.id.tv_weekDay)).setText(weekDay[weekDayNum-1]);
+    }
 
     private class DownloadUpdate extends AsyncTask<String, Void, String> {
-
 
         @Override
         protected String doInBackground(String... strings) {
             String stringUrl = "http://mpianatra.com/Courses/info.txt";
             HttpURLConnection urlConnection = null;
             BufferedReader reader;
-
             try {
                 URL url = new URL(stringUrl);
 
